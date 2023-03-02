@@ -1,0 +1,2007 @@
+diff --git a/CHOW.jucer b/CHOW.jucer
+index 27f60ec..f8045cc 100644
+--- a/CHOW.jucer
++++ b/CHOW.jucer
+@@ -1,11 +1,12 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ 
+-<JUCERPROJECT id="zK0IVL" name="CHOW" projectType="audioplug" pluginFormats="buildLV2,buildStandalone,buildVST3"
++<JUCERPROJECT id="zK0IVL" name="CHOW" projectType="audioplug" pluginFormats="buildLV2,buildStandalone,buildVST,buildVST3"
+               bundleIdentifier="com.chowdsp.CHOW" version="1.1.0" companyName="Chowdhury DSP"
+               companyWebsite="chowdsp.com" companyEmail="chowdsp@gmail.com"
+               pluginName="CHOW" pluginDesc="Maximally truculent distortion"
+               pluginManufacturerCode="Chow" aaxIdentifier="com.chowdsp.CHOW"
+-              displaySplashScreen="1" jucerFormatVersion="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0 &#10;JUCE_REPORT_APP_USAGE=0 ">
++              displaySplashScreen="1" jucerFormatVersion="1" defines="JUCE_DISPLAY_SPLASH_SCREEN=0 &#10;JUCE_REPORT_APP_USAGE=0 "
++              lv2Uri="https://github.com/Chowdhury-DSP/CHOW">
+   <MAINGROUP id="fvFmFA" name="CHOW">
+     <GROUP id="{77BB85C6-10A2-D351-C891-0FA2413631C8}" name="Source">
+       <FILE id="hDt2H8" name="ChowSlider.h" compile="0" resource="0" file="Source/ChowSlider.h"/>
+@@ -69,7 +70,8 @@
+         <MODULEPATH id="juce_video" path="../../AudioWorks/SoundMi/submodules/JUCE/modules"/>
+       </MODULEPATHS>
+     </VS2017>
+-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraCompilerFlags="-fvisibility=hidden -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all -fPIC&#10;">
++    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraCompilerFlags="-fvisibility=hidden"
++                extraLinkerFlags="-fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all -fPIC">
+       <CONFIGURATIONS>
+         <CONFIGURATION isDebug="1" name="Debug" enablePluginBinaryCopyStep="0"/>
+         <CONFIGURATION isDebug="0" name="Release" enablePluginBinaryCopyStep="1"/>
+@@ -114,5 +116,6 @@
+   <LIVE_SETTINGS>
+     <WINDOWS/>
+   </LIVE_SETTINGS>
+-  <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
++  <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"
++               JUCE_JACK="1" JUCE_WEB_BROWSER="0" JUCE_USE_CURL="0"/>
+ </JUCERPROJECT>
+diff --git a/JuceLibraryCode/AppConfig.h b/JuceLibraryCode/AppConfig.h
+index 1ecc8f4..0a9e785 100644
+--- a/JuceLibraryCode/AppConfig.h
++++ b/JuceLibraryCode/AppConfig.h
+@@ -1,468 +1,341 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-    There's a section below where you can add your own custom code safely, and the
+-    Projucer will preserve the contents of that block, but the best way to change
+-    any of these definitions is by using the Projucer's project settings.
+-
+-    Any commented-out settings will assume their default values.
+-
+-*/
+-
+-#pragma once
+-
+-//==============================================================================
+-// [BEGIN_USER_CODE_SECTION]
+-
+-// (You can add your own code in this section, and the Projucer will not overwrite it)
+-
+-// [END_USER_CODE_SECTION]
+-
+-/*
+-  ==============================================================================
+-
+-   In accordance with the terms of the JUCE 5 End-Use License Agreement, the
+-   JUCE Code in SECTION A cannot be removed, changed or otherwise rendered
+-   ineffective unless you have a JUCE Indie or Pro license, or are using JUCE
+-   under the GPL v3 license.
+-
+-   End User License Agreement: www.juce.com/juce-5-licence
+-
+-  ==============================================================================
+-*/
+-
+-// BEGIN SECTION A
+-
+-#ifndef JUCE_DISPLAY_SPLASH_SCREEN
+- #define JUCE_DISPLAY_SPLASH_SCREEN 0
+-#endif
+-
+-#ifndef JUCE_REPORT_APP_USAGE
+- #define JUCE_REPORT_APP_USAGE 1
+-#endif
+-
+-// END SECTION A
+-
+-#define JUCE_USE_DARK_SPLASH_SCREEN 1
+-
+-//==============================================================================
+-#define JUCE_MODULE_AVAILABLE_juce_audio_basics             1
+-#define JUCE_MODULE_AVAILABLE_juce_audio_devices            1
+-#define JUCE_MODULE_AVAILABLE_juce_audio_formats            1
+-#define JUCE_MODULE_AVAILABLE_juce_audio_plugin_client      1
+-#define JUCE_MODULE_AVAILABLE_juce_audio_processors         1
+-#define JUCE_MODULE_AVAILABLE_juce_audio_utils              1
+-#define JUCE_MODULE_AVAILABLE_juce_core                     1
+-#define JUCE_MODULE_AVAILABLE_juce_cryptography             1
+-#define JUCE_MODULE_AVAILABLE_juce_data_structures          1
+-#define JUCE_MODULE_AVAILABLE_juce_events                   1
+-#define JUCE_MODULE_AVAILABLE_juce_graphics                 1
+-#define JUCE_MODULE_AVAILABLE_juce_gui_basics               1
+-#define JUCE_MODULE_AVAILABLE_juce_gui_extra                1
+-#define JUCE_MODULE_AVAILABLE_juce_opengl                   1
+-#define JUCE_MODULE_AVAILABLE_juce_video                    1
+-
+-#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
+-
+-//==============================================================================
+-// juce_audio_devices flags:
+-
+-#ifndef    JUCE_USE_WINRT_MIDI
+- //#define JUCE_USE_WINRT_MIDI 0
+-#endif
+-
+-#ifndef    JUCE_ASIO
+- //#define JUCE_ASIO 0
+-#endif
+-
+-#ifndef    JUCE_WASAPI
+- //#define JUCE_WASAPI 1
+-#endif
+-
+-#ifndef    JUCE_WASAPI_EXCLUSIVE
+- //#define JUCE_WASAPI_EXCLUSIVE 0
+-#endif
+-
+-#ifndef    JUCE_DIRECTSOUND
+- //#define JUCE_DIRECTSOUND 1
+-#endif
+-
+-#ifndef    JUCE_ALSA
+- //#define JUCE_ALSA 1
+-#endif
+-
+-#ifndef    JUCE_JACK
+- //#define JUCE_JACK 0
+-#endif
+-
+-#ifndef    JUCE_BELA
+- //#define JUCE_BELA 0
+-#endif
+-
+-#ifndef    JUCE_USE_ANDROID_OBOE
+- //#define JUCE_USE_ANDROID_OBOE 0
+-#endif
+-
+-#ifndef    JUCE_USE_ANDROID_OPENSLES
+- //#define JUCE_USE_ANDROID_OPENSLES 0
+-#endif
+-
+-#ifndef    JUCE_DISABLE_AUDIO_MIXING_WITH_OTHER_APPS
+- //#define JUCE_DISABLE_AUDIO_MIXING_WITH_OTHER_APPS 0
+-#endif
+-
+-//==============================================================================
+-// juce_audio_formats flags:
+-
+-#ifndef    JUCE_USE_FLAC
+- //#define JUCE_USE_FLAC 1
+-#endif
+-
+-#ifndef    JUCE_USE_OGGVORBIS
+- //#define JUCE_USE_OGGVORBIS 1
+-#endif
+-
+-#ifndef    JUCE_USE_MP3AUDIOFORMAT
+- //#define JUCE_USE_MP3AUDIOFORMAT 0
+-#endif
+-
+-#ifndef    JUCE_USE_LAME_AUDIO_FORMAT
+- //#define JUCE_USE_LAME_AUDIO_FORMAT 0
+-#endif
+-
+-#ifndef    JUCE_USE_WINDOWS_MEDIA_FORMAT
+- //#define JUCE_USE_WINDOWS_MEDIA_FORMAT 1
+-#endif
+-
+-//==============================================================================
+-// juce_audio_plugin_client flags:
+-
+-#ifndef    JUCE_VST3_CAN_REPLACE_VST2
+- #define   JUCE_VST3_CAN_REPLACE_VST2 0
+-#endif
+-
+-#ifndef    JUCE_FORCE_USE_LEGACY_PARAM_IDS
+- //#define JUCE_FORCE_USE_LEGACY_PARAM_IDS 0
+-#endif
+-
+-#ifndef    JUCE_FORCE_LEGACY_PARAMETER_AUTOMATION_TYPE
+- //#define JUCE_FORCE_LEGACY_PARAMETER_AUTOMATION_TYPE 0
+-#endif
+-
+-#ifndef    JUCE_USE_STUDIO_ONE_COMPATIBLE_PARAMETERS
+- //#define JUCE_USE_STUDIO_ONE_COMPATIBLE_PARAMETERS 1
+-#endif
+-
+-#ifndef    JUCE_STANDALONE_FILTER_WINDOW_USE_KIOSK_MODE
+- //#define JUCE_STANDALONE_FILTER_WINDOW_USE_KIOSK_MODE 0
+-#endif
+-
+-//==============================================================================
+-// juce_audio_processors flags:
+-
+-#ifndef    JUCE_PLUGINHOST_VST
+- //#define JUCE_PLUGINHOST_VST 0
+-#endif
+-
+-#ifndef    JUCE_PLUGINHOST_VST3
+- //#define JUCE_PLUGINHOST_VST3 0
+-#endif
+-
+-#ifndef    JUCE_PLUGINHOST_AU
+- //#define JUCE_PLUGINHOST_AU 0
+-#endif
+-
+-#ifndef    JUCE_PLUGINHOST_LADSPA
+- //#define JUCE_PLUGINHOST_LADSPA 0
+-#endif
+-
+-//==============================================================================
+-// juce_audio_utils flags:
+-
+-#ifndef    JUCE_USE_CDREADER
+- //#define JUCE_USE_CDREADER 0
+-#endif
+-
+-#ifndef    JUCE_USE_CDBURNER
+- //#define JUCE_USE_CDBURNER 0
+-#endif
+-
+-//==============================================================================
+-// juce_core flags:
+-
+-#ifndef    JUCE_FORCE_DEBUG
+- //#define JUCE_FORCE_DEBUG 0
+-#endif
+-
+-#ifndef    JUCE_LOG_ASSERTIONS
+- //#define JUCE_LOG_ASSERTIONS 0
+-#endif
+-
+-#ifndef    JUCE_CHECK_MEMORY_LEAKS
+- //#define JUCE_CHECK_MEMORY_LEAKS 1
+-#endif
+-
+-#ifndef    JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
+- //#define JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES 0
+-#endif
+-
+-#ifndef    JUCE_INCLUDE_ZLIB_CODE
+- //#define JUCE_INCLUDE_ZLIB_CODE 1
+-#endif
+-
+-#ifndef    JUCE_USE_CURL
+- //#define JUCE_USE_CURL 0
+-#endif
+-
+-#ifndef    JUCE_LOAD_CURL_SYMBOLS_LAZILY
+- //#define JUCE_LOAD_CURL_SYMBOLS_LAZILY 0
+-#endif
+-
+-#ifndef    JUCE_CATCH_UNHANDLED_EXCEPTIONS
+- //#define JUCE_CATCH_UNHANDLED_EXCEPTIONS 1
+-#endif
+-
+-#ifndef    JUCE_ALLOW_STATIC_NULL_VARIABLES
+- //#define JUCE_ALLOW_STATIC_NULL_VARIABLES 1
+-#endif
+-
+-#ifndef    JUCE_STRICT_REFCOUNTEDPOINTER
+- #define   JUCE_STRICT_REFCOUNTEDPOINTER 1
+-#endif
+-
+-//==============================================================================
+-// juce_events flags:
+-
+-#ifndef    JUCE_EXECUTE_APP_SUSPEND_ON_IOS_BACKGROUND_TASK
+- //#define JUCE_EXECUTE_APP_SUSPEND_ON_IOS_BACKGROUND_TASK 0
+-#endif
+-
+-//==============================================================================
+-// juce_graphics flags:
+-
+-#ifndef    JUCE_USE_COREIMAGE_LOADER
+- //#define JUCE_USE_COREIMAGE_LOADER 1
+-#endif
+-
+-#ifndef    JUCE_USE_DIRECTWRITE
+- //#define JUCE_USE_DIRECTWRITE 1
+-#endif
+-
+-#ifndef    JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING
+- //#define JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING 0
+-#endif
+-
+-//==============================================================================
+-// juce_gui_basics flags:
+-
+-#ifndef    JUCE_ENABLE_REPAINT_DEBUGGING
+- //#define JUCE_ENABLE_REPAINT_DEBUGGING 0
+-#endif
+-
+-#ifndef    JUCE_USE_XRANDR
+- //#define JUCE_USE_XRANDR 1
+-#endif
+-
+-#ifndef    JUCE_USE_XINERAMA
+- //#define JUCE_USE_XINERAMA 1
+-#endif
+-
+-#ifndef    JUCE_USE_XSHM
+- //#define JUCE_USE_XSHM 1
+-#endif
+-
+-#ifndef    JUCE_USE_XRENDER
+- //#define JUCE_USE_XRENDER 0
+-#endif
+-
+-#ifndef    JUCE_USE_XCURSOR
+- //#define JUCE_USE_XCURSOR 1
+-#endif
+-
+-#ifndef    JUCE_WIN_PER_MONITOR_DPI_AWARE
+- //#define JUCE_WIN_PER_MONITOR_DPI_AWARE 1
+-#endif
+-
+-//==============================================================================
+-// juce_gui_extra flags:
+-
+-#ifndef    JUCE_WEB_BROWSER
+- //#define JUCE_WEB_BROWSER 1
+-#endif
+-
+-#ifndef    JUCE_ENABLE_LIVE_CONSTANT_EDITOR
+- //#define JUCE_ENABLE_LIVE_CONSTANT_EDITOR 0
+-#endif
+-
+-//==============================================================================
+-// juce_video flags:
+-
+-#ifndef    JUCE_USE_CAMERA
+- //#define JUCE_USE_CAMERA 0
+-#endif
+-
+-#ifndef    JUCE_SYNC_VIDEO_VOLUME_WITH_OS_MEDIA_VOLUME
+- //#define JUCE_SYNC_VIDEO_VOLUME_WITH_OS_MEDIA_VOLUME 1
+-#endif
+-
+-//==============================================================================
+-// Audio plugin settings..
+-
+-#ifndef  JucePlugin_Build_VST
+- #define JucePlugin_Build_VST              1
+-#endif
+-#ifndef  JucePlugin_Build_VST3
+- #define JucePlugin_Build_VST3             1
+-#endif
+-#ifndef  JucePlugin_Build_AU
+- #define JucePlugin_Build_AU               1
+-#endif
+-#ifndef  JucePlugin_Build_AUv3
+- #define JucePlugin_Build_AUv3             0
+-#endif
+-#ifndef  JucePlugin_Build_RTAS
+- #define JucePlugin_Build_RTAS             0
+-#endif
+-#ifndef  JucePlugin_Build_AAX
+- #define JucePlugin_Build_AAX              0
+-#endif
+-#ifndef  JucePlugin_Build_Standalone
+- #define JucePlugin_Build_Standalone       1
+-#endif
+-#ifndef  JucePlugin_Build_Unity
+- #define JucePlugin_Build_Unity            0
+-#endif
+-#ifndef  JucePlugin_Enable_IAA
+- #define JucePlugin_Enable_IAA             0
+-#endif
+-#ifndef  JucePlugin_Name
+- #define JucePlugin_Name                   "CHOW"
+-#endif
+-#ifndef  JucePlugin_Desc
+- #define JucePlugin_Desc                   "Maximally truculent distortion"
+-#endif
+-#ifndef  JucePlugin_Manufacturer
+- #define JucePlugin_Manufacturer           "Chowdhury DSP"
+-#endif
+-#ifndef  JucePlugin_ManufacturerWebsite
+- #define JucePlugin_ManufacturerWebsite    "chowdsp.com"
+-#endif
+-#ifndef  JucePlugin_ManufacturerEmail
+- #define JucePlugin_ManufacturerEmail      "chowdsp@gmail.com"
+-#endif
+-#ifndef  JucePlugin_ManufacturerCode
+- #define JucePlugin_ManufacturerCode       0x43686f77 // 'Chow'
+-#endif
+-#ifndef  JucePlugin_PluginCode
+- #define JucePlugin_PluginCode             0x5a6b3069 // 'Zk0i'
+-#endif
+-#ifndef  JucePlugin_IsSynth
+- #define JucePlugin_IsSynth                0
+-#endif
+-#ifndef  JucePlugin_WantsMidiInput
+- #define JucePlugin_WantsMidiInput         0
+-#endif
+-#ifndef  JucePlugin_ProducesMidiOutput
+- #define JucePlugin_ProducesMidiOutput     0
+-#endif
+-#ifndef  JucePlugin_IsMidiEffect
+- #define JucePlugin_IsMidiEffect           0
+-#endif
+-#ifndef  JucePlugin_EditorRequiresKeyboardFocus
+- #define JucePlugin_EditorRequiresKeyboardFocus  0
+-#endif
+-#ifndef  JucePlugin_Version
+- #define JucePlugin_Version                1.1.0
+-#endif
+-#ifndef  JucePlugin_VersionCode
+- #define JucePlugin_VersionCode            0x10100
+-#endif
+-#ifndef  JucePlugin_VersionString
+- #define JucePlugin_VersionString          "1.1.0"
+-#endif
+-#ifndef  JucePlugin_VSTUniqueID
+- #define JucePlugin_VSTUniqueID            JucePlugin_PluginCode
+-#endif
+-#ifndef  JucePlugin_VSTCategory
+- #define JucePlugin_VSTCategory            kPlugCategEffect
+-#endif
+-#ifndef  JucePlugin_Vst3Category
+- #define JucePlugin_Vst3Category           "Fx"
+-#endif
+-#ifndef  JucePlugin_AUMainType
+- #define JucePlugin_AUMainType             'aufx'
+-#endif
+-#ifndef  JucePlugin_AUSubType
+- #define JucePlugin_AUSubType              JucePlugin_PluginCode
+-#endif
+-#ifndef  JucePlugin_AUExportPrefix
+- #define JucePlugin_AUExportPrefix         CHOWAU
+-#endif
+-#ifndef  JucePlugin_AUExportPrefixQuoted
+- #define JucePlugin_AUExportPrefixQuoted   "CHOWAU"
+-#endif
+-#ifndef  JucePlugin_AUManufacturerCode
+- #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
+-#endif
+-#ifndef  JucePlugin_CFBundleIdentifier
+- #define JucePlugin_CFBundleIdentifier     com.chowdsp.CHOW
+-#endif
+-#ifndef  JucePlugin_RTASCategory
+- #define JucePlugin_RTASCategory           0
+-#endif
+-#ifndef  JucePlugin_RTASManufacturerCode
+- #define JucePlugin_RTASManufacturerCode   JucePlugin_ManufacturerCode
+-#endif
+-#ifndef  JucePlugin_RTASProductId
+- #define JucePlugin_RTASProductId          JucePlugin_PluginCode
+-#endif
+-#ifndef  JucePlugin_RTASDisableBypass
+- #define JucePlugin_RTASDisableBypass      0
+-#endif
+-#ifndef  JucePlugin_RTASDisableMultiMono
+- #define JucePlugin_RTASDisableMultiMono   0
+-#endif
+-#ifndef  JucePlugin_AAXIdentifier
+- #define JucePlugin_AAXIdentifier          com.chowdsp.CHOW
+-#endif
+-#ifndef  JucePlugin_AAXManufacturerCode
+- #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode
+-#endif
+-#ifndef  JucePlugin_AAXProductId
+- #define JucePlugin_AAXProductId           JucePlugin_PluginCode
+-#endif
+-#ifndef  JucePlugin_AAXCategory
+- #define JucePlugin_AAXCategory            0
+-#endif
+-#ifndef  JucePlugin_AAXDisableBypass
+- #define JucePlugin_AAXDisableBypass       0
+-#endif
+-#ifndef  JucePlugin_AAXDisableMultiMono
+- #define JucePlugin_AAXDisableMultiMono    0
+-#endif
+-#ifndef  JucePlugin_IAAType
+- #define JucePlugin_IAAType                0x61757278 // 'aurx'
+-#endif
+-#ifndef  JucePlugin_IAASubType
+- #define JucePlugin_IAASubType             JucePlugin_PluginCode
+-#endif
+-#ifndef  JucePlugin_IAAName
+- #define JucePlugin_IAAName                "Chowdhury DSP: CHOW"
+-#endif
+-#ifndef  JucePlugin_VSTNumMidiInputs
+- #define JucePlugin_VSTNumMidiInputs       16
+-#endif
+-#ifndef  JucePlugin_VSTNumMidiOutputs
+- #define JucePlugin_VSTNumMidiOutputs      16
+-#endif
+-
+-//==============================================================================
+-#ifndef    JUCE_STANDALONE_APPLICATION
+- #if defined(JucePlugin_Name) && defined(JucePlugin_Build_Standalone)
+-  #define  JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+- #else
+-  #define  JUCE_STANDALONE_APPLICATION 0
+- #endif
+-#endif
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++    There's a section below where you can add your own custom code safely, and the
++    Projucer will preserve the contents of that block, but the best way to change
++    any of these definitions is by using the Projucer's project settings.
++
++    Any commented-out settings will assume their default values.
++
++*/
++
++#pragma once
++
++//==============================================================================
++// [BEGIN_USER_CODE_SECTION]
++
++// (You can add your own code in this section, and the Projucer will not overwrite it)
++
++// [END_USER_CODE_SECTION]
++
++#include "JucePluginDefines.h"
++
++/*
++  ==============================================================================
++
++   In accordance with the terms of the JUCE 7 End-Use License Agreement, the
++   JUCE Code in SECTION A cannot be removed, changed or otherwise rendered
++   ineffective unless you have a JUCE Indie or Pro license, or are using JUCE
++   under the GPL v3 license.
++
++   End User License Agreement: www.juce.com/juce-7-licence
++
++  ==============================================================================
++*/
++
++// BEGIN SECTION A
++
++#ifndef JUCE_DISPLAY_SPLASH_SCREEN
++ #define JUCE_DISPLAY_SPLASH_SCREEN 1
++#endif
++
++// END SECTION A
++
++#define JUCE_USE_DARK_SPLASH_SCREEN 1
++
++#define JUCE_PROJUCER_VERSION 0x70005
++
++//==============================================================================
++#define JUCE_MODULE_AVAILABLE_juce_audio_basics             1
++#define JUCE_MODULE_AVAILABLE_juce_audio_devices            1
++#define JUCE_MODULE_AVAILABLE_juce_audio_formats            1
++#define JUCE_MODULE_AVAILABLE_juce_audio_plugin_client      1
++#define JUCE_MODULE_AVAILABLE_juce_audio_processors         1
++#define JUCE_MODULE_AVAILABLE_juce_audio_utils              1
++#define JUCE_MODULE_AVAILABLE_juce_core                     1
++#define JUCE_MODULE_AVAILABLE_juce_cryptography             1
++#define JUCE_MODULE_AVAILABLE_juce_data_structures          1
++#define JUCE_MODULE_AVAILABLE_juce_events                   1
++#define JUCE_MODULE_AVAILABLE_juce_graphics                 1
++#define JUCE_MODULE_AVAILABLE_juce_gui_basics               1
++#define JUCE_MODULE_AVAILABLE_juce_gui_extra                1
++#define JUCE_MODULE_AVAILABLE_juce_opengl                   1
++#define JUCE_MODULE_AVAILABLE_juce_video                    1
++
++#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
++
++//==============================================================================
++// juce_audio_devices flags:
++
++#ifndef    JUCE_USE_WINRT_MIDI
++ //#define JUCE_USE_WINRT_MIDI 0
++#endif
++
++#ifndef    JUCE_ASIO
++ //#define JUCE_ASIO 0
++#endif
++
++#ifndef    JUCE_WASAPI
++ //#define JUCE_WASAPI 1
++#endif
++
++#ifndef    JUCE_DIRECTSOUND
++ //#define JUCE_DIRECTSOUND 1
++#endif
++
++#ifndef    JUCE_ALSA
++ //#define JUCE_ALSA 1
++#endif
++
++#ifndef    JUCE_JACK
++ #define   JUCE_JACK 1
++#endif
++
++#ifndef    JUCE_BELA
++ //#define JUCE_BELA 0
++#endif
++
++#ifndef    JUCE_USE_ANDROID_OBOE
++ //#define JUCE_USE_ANDROID_OBOE 1
++#endif
++
++#ifndef    JUCE_USE_OBOE_STABILIZED_CALLBACK
++ //#define JUCE_USE_OBOE_STABILIZED_CALLBACK 0
++#endif
++
++#ifndef    JUCE_USE_ANDROID_OPENSLES
++ //#define JUCE_USE_ANDROID_OPENSLES 0
++#endif
++
++#ifndef    JUCE_DISABLE_AUDIO_MIXING_WITH_OTHER_APPS
++ //#define JUCE_DISABLE_AUDIO_MIXING_WITH_OTHER_APPS 0
++#endif
++
++//==============================================================================
++// juce_audio_formats flags:
++
++#ifndef    JUCE_USE_FLAC
++ //#define JUCE_USE_FLAC 1
++#endif
++
++#ifndef    JUCE_USE_OGGVORBIS
++ //#define JUCE_USE_OGGVORBIS 1
++#endif
++
++#ifndef    JUCE_USE_MP3AUDIOFORMAT
++ //#define JUCE_USE_MP3AUDIOFORMAT 0
++#endif
++
++#ifndef    JUCE_USE_LAME_AUDIO_FORMAT
++ //#define JUCE_USE_LAME_AUDIO_FORMAT 0
++#endif
++
++#ifndef    JUCE_USE_WINDOWS_MEDIA_FORMAT
++ //#define JUCE_USE_WINDOWS_MEDIA_FORMAT 1
++#endif
++
++//==============================================================================
++// juce_audio_plugin_client flags:
++
++#ifndef    JUCE_VST3_CAN_REPLACE_VST2
++ #define   JUCE_VST3_CAN_REPLACE_VST2 0
++#endif
++
++#ifndef    JUCE_FORCE_USE_LEGACY_PARAM_IDS
++ //#define JUCE_FORCE_USE_LEGACY_PARAM_IDS 0
++#endif
++
++#ifndef    JUCE_FORCE_LEGACY_PARAMETER_AUTOMATION_TYPE
++ //#define JUCE_FORCE_LEGACY_PARAMETER_AUTOMATION_TYPE 0
++#endif
++
++#ifndef    JUCE_USE_STUDIO_ONE_COMPATIBLE_PARAMETERS
++ //#define JUCE_USE_STUDIO_ONE_COMPATIBLE_PARAMETERS 1
++#endif
++
++#ifndef    JUCE_AU_WRAPPERS_SAVE_PROGRAM_STATES
++ //#define JUCE_AU_WRAPPERS_SAVE_PROGRAM_STATES 0
++#endif
++
++#ifndef    JUCE_STANDALONE_FILTER_WINDOW_USE_KIOSK_MODE
++ //#define JUCE_STANDALONE_FILTER_WINDOW_USE_KIOSK_MODE 0
++#endif
++
++//==============================================================================
++// juce_audio_processors flags:
++
++#ifndef    JUCE_PLUGINHOST_VST
++ //#define JUCE_PLUGINHOST_VST 0
++#endif
++
++#ifndef    JUCE_PLUGINHOST_VST3
++ //#define JUCE_PLUGINHOST_VST3 0
++#endif
++
++#ifndef    JUCE_PLUGINHOST_AU
++ //#define JUCE_PLUGINHOST_AU 0
++#endif
++
++#ifndef    JUCE_PLUGINHOST_LADSPA
++ //#define JUCE_PLUGINHOST_LADSPA 0
++#endif
++
++#ifndef    JUCE_PLUGINHOST_LV2
++ //#define JUCE_PLUGINHOST_LV2 0
++#endif
++
++#ifndef    JUCE_PLUGINHOST_ARA
++ //#define JUCE_PLUGINHOST_ARA 0
++#endif
++
++#ifndef    JUCE_CUSTOM_VST3_SDK
++ //#define JUCE_CUSTOM_VST3_SDK 0
++#endif
++
++//==============================================================================
++// juce_audio_utils flags:
++
++#ifndef    JUCE_USE_CDREADER
++ //#define JUCE_USE_CDREADER 0
++#endif
++
++#ifndef    JUCE_USE_CDBURNER
++ //#define JUCE_USE_CDBURNER 0
++#endif
++
++//==============================================================================
++// juce_core flags:
++
++#ifndef    JUCE_FORCE_DEBUG
++ //#define JUCE_FORCE_DEBUG 0
++#endif
++
++#ifndef    JUCE_LOG_ASSERTIONS
++ //#define JUCE_LOG_ASSERTIONS 0
++#endif
++
++#ifndef    JUCE_CHECK_MEMORY_LEAKS
++ //#define JUCE_CHECK_MEMORY_LEAKS 1
++#endif
++
++#ifndef    JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
++ //#define JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES 0
++#endif
++
++#ifndef    JUCE_INCLUDE_ZLIB_CODE
++ //#define JUCE_INCLUDE_ZLIB_CODE 1
++#endif
++
++#ifndef    JUCE_USE_CURL
++ #define   JUCE_USE_CURL 0
++#endif
++
++#ifndef    JUCE_LOAD_CURL_SYMBOLS_LAZILY
++ //#define JUCE_LOAD_CURL_SYMBOLS_LAZILY 0
++#endif
++
++#ifndef    JUCE_CATCH_UNHANDLED_EXCEPTIONS
++ //#define JUCE_CATCH_UNHANDLED_EXCEPTIONS 0
++#endif
++
++#ifndef    JUCE_ALLOW_STATIC_NULL_VARIABLES
++ //#define JUCE_ALLOW_STATIC_NULL_VARIABLES 0
++#endif
++
++#ifndef    JUCE_STRICT_REFCOUNTEDPOINTER
++ #define   JUCE_STRICT_REFCOUNTEDPOINTER 1
++#endif
++
++#ifndef    JUCE_ENABLE_ALLOCATION_HOOKS
++ //#define JUCE_ENABLE_ALLOCATION_HOOKS 0
++#endif
++
++//==============================================================================
++// juce_events flags:
++
++#ifndef    JUCE_EXECUTE_APP_SUSPEND_ON_BACKGROUND_TASK
++ //#define JUCE_EXECUTE_APP_SUSPEND_ON_BACKGROUND_TASK 0
++#endif
++
++//==============================================================================
++// juce_graphics flags:
++
++#ifndef    JUCE_USE_COREIMAGE_LOADER
++ //#define JUCE_USE_COREIMAGE_LOADER 1
++#endif
++
++#ifndef    JUCE_USE_DIRECTWRITE
++ //#define JUCE_USE_DIRECTWRITE 1
++#endif
++
++#ifndef    JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING
++ //#define JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING 0
++#endif
++
++//==============================================================================
++// juce_gui_basics flags:
++
++#ifndef    JUCE_ENABLE_REPAINT_DEBUGGING
++ //#define JUCE_ENABLE_REPAINT_DEBUGGING 0
++#endif
++
++#ifndef    JUCE_USE_XRANDR
++ //#define JUCE_USE_XRANDR 1
++#endif
++
++#ifndef    JUCE_USE_XINERAMA
++ //#define JUCE_USE_XINERAMA 1
++#endif
++
++#ifndef    JUCE_USE_XSHM
++ //#define JUCE_USE_XSHM 1
++#endif
++
++#ifndef    JUCE_USE_XRENDER
++ //#define JUCE_USE_XRENDER 0
++#endif
++
++#ifndef    JUCE_USE_XCURSOR
++ //#define JUCE_USE_XCURSOR 1
++#endif
++
++#ifndef    JUCE_WIN_PER_MONITOR_DPI_AWARE
++ //#define JUCE_WIN_PER_MONITOR_DPI_AWARE 1
++#endif
++
++//==============================================================================
++// juce_gui_extra flags:
++
++#ifndef    JUCE_WEB_BROWSER
++ #define   JUCE_WEB_BROWSER 0
++#endif
++
++#ifndef    JUCE_USE_WIN_WEBVIEW2
++ //#define JUCE_USE_WIN_WEBVIEW2 0
++#endif
++
++#ifndef    JUCE_ENABLE_LIVE_CONSTANT_EDITOR
++ //#define JUCE_ENABLE_LIVE_CONSTANT_EDITOR 0
++#endif
++
++//==============================================================================
++// juce_video flags:
++
++#ifndef    JUCE_USE_CAMERA
++ //#define JUCE_USE_CAMERA 0
++#endif
++
++#ifndef    JUCE_SYNC_VIDEO_VOLUME_WITH_OS_MEDIA_VOLUME
++ //#define JUCE_SYNC_VIDEO_VOLUME_WITH_OS_MEDIA_VOLUME 1
++#endif
++
++//==============================================================================
++#ifndef    JUCE_STANDALONE_APPLICATION
++ #if defined(JucePlugin_Name) && defined(JucePlugin_Build_Standalone)
++  #define  JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
++ #else
++  #define  JUCE_STANDALONE_APPLICATION 0
++ #endif
++#endif
+diff --git a/JuceLibraryCode/JuceHeader.h b/JuceLibraryCode/JuceHeader.h
+index 2da745c..1c485f2 100644
+--- a/JuceLibraryCode/JuceHeader.h
++++ b/JuceLibraryCode/JuceHeader.h
+@@ -1,48 +1,57 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-    This is the header file that your files should include in order to get all the
+-    JUCE library headers. You should avoid including the JUCE headers directly in
+-    your own source files, because that wouldn't pick up the correct configuration
+-    options for your app.
+-
+-*/
+-
+-#pragma once
+-
+-#include "AppConfig.h"
+-
+-#include <juce_audio_basics/juce_audio_basics.h>
+-#include <juce_audio_devices/juce_audio_devices.h>
+-#include <juce_audio_formats/juce_audio_formats.h>
+-#include <juce_audio_plugin_client/juce_audio_plugin_client.h>
+-#include <juce_audio_processors/juce_audio_processors.h>
+-#include <juce_audio_utils/juce_audio_utils.h>
+-#include <juce_core/juce_core.h>
+-#include <juce_cryptography/juce_cryptography.h>
+-#include <juce_data_structures/juce_data_structures.h>
+-#include <juce_events/juce_events.h>
+-#include <juce_graphics/juce_graphics.h>
+-#include <juce_gui_basics/juce_gui_basics.h>
+-#include <juce_gui_extra/juce_gui_extra.h>
+-#include <juce_opengl/juce_opengl.h>
+-#include <juce_video/juce_video.h>
+-
+-
+-#if ! DONT_SET_USING_JUCE_NAMESPACE
+- // If your code uses a lot of JUCE classes, then this will obviously save you
+- // a lot of typing, but can be disabled by setting DONT_SET_USING_JUCE_NAMESPACE.
+- using namespace juce;
+-#endif
+-
+-#if ! JUCE_DONT_DECLARE_PROJECTINFO
+-namespace ProjectInfo
+-{
+-    const char* const  projectName    = "CHOW";
+-    const char* const  companyName    = "Chowdhury DSP";
+-    const char* const  versionString  = "1.1.0";
+-    const int          versionNumber  = 0x10100;
+-}
+-#endif
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++    This is the header file that your files should include in order to get all the
++    JUCE library headers. You should avoid including the JUCE headers directly in
++    your own source files, because that wouldn't pick up the correct configuration
++    options for your app.
++
++*/
++
++#pragma once
++
++#include "AppConfig.h"
++
++#include <juce_audio_basics/juce_audio_basics.h>
++#include <juce_audio_devices/juce_audio_devices.h>
++#include <juce_audio_formats/juce_audio_formats.h>
++#include <juce_audio_plugin_client/juce_audio_plugin_client.h>
++#include <juce_audio_processors/juce_audio_processors.h>
++#include <juce_audio_utils/juce_audio_utils.h>
++#include <juce_core/juce_core.h>
++#include <juce_cryptography/juce_cryptography.h>
++#include <juce_data_structures/juce_data_structures.h>
++#include <juce_events/juce_events.h>
++#include <juce_graphics/juce_graphics.h>
++#include <juce_gui_basics/juce_gui_basics.h>
++#include <juce_gui_extra/juce_gui_extra.h>
++#include <juce_opengl/juce_opengl.h>
++#include <juce_video/juce_video.h>
++
++
++#if defined (JUCE_PROJUCER_VERSION) && JUCE_PROJUCER_VERSION < JUCE_VERSION
++ /** If you've hit this error then the version of the Projucer that was used to generate this project is
++     older than the version of the JUCE modules being included. To fix this error, re-save your project
++     using the latest version of the Projucer or, if you aren't using the Projucer to manage your project,
++     remove the JUCE_PROJUCER_VERSION define.
++ */
++ #error "This project was last saved using an outdated version of the Projucer! Re-save this project with the latest version to fix this error."
++#endif
++
++#if ! DONT_SET_USING_JUCE_NAMESPACE
++ // If your code uses a lot of JUCE classes, then this will obviously save you
++ // a lot of typing, but can be disabled by setting DONT_SET_USING_JUCE_NAMESPACE.
++ using namespace juce;
++#endif
++
++#if ! JUCE_DONT_DECLARE_PROJECTINFO
++namespace ProjectInfo
++{
++    const char* const  projectName    = "CHOW";
++    const char* const  companyName    = "Chowdhury DSP";
++    const char* const  versionString  = "1.1.0";
++    const int          versionNumber  = 0x10100;
++}
++#endif
+diff --git a/JuceLibraryCode/ReadMe.txt b/JuceLibraryCode/ReadMe.txt
+index 1e6784f..091a5aa 100644
+--- a/JuceLibraryCode/ReadMe.txt
++++ b/JuceLibraryCode/ReadMe.txt
+@@ -1,12 +1,12 @@
+-
+- Important Note!!
+- ================
+-
+-The purpose of this folder is to contain files that are auto-generated by the Projucer,
+-and ALL files in this folder will be mercilessly DELETED and completely re-written whenever
+-the Projucer saves your project.
+-
+-Therefore, it's a bad idea to make any manual changes to the files in here, or to
+-put any of your own files in here if you don't want to lose them. (Of course you may choose
+-to add the folder's contents to your version-control system so that you can re-merge your own
+-modifications after the Projucer has saved its changes).
++
++ Important Note!!
++ ================
++
++The purpose of this folder is to contain files that are auto-generated by the Projucer,
++and ALL files in this folder will be mercilessly DELETED and completely re-written whenever
++the Projucer saves your project.
++
++Therefore, it's a bad idea to make any manual changes to the files in here, or to
++put any of your own files in here if you don't want to lose them. (Of course you may choose
++to add the folder's contents to your version-control system so that you can re-merge your own
++modifications after the Projucer has saved its changes).
+diff --git a/JuceLibraryCode/include_juce_audio_basics.cpp b/JuceLibraryCode/include_juce_audio_basics.cpp
+index b949f56..4186948 100644
+--- a/JuceLibraryCode/include_juce_audio_basics.cpp
++++ b/JuceLibraryCode/include_juce_audio_basics.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_basics/juce_audio_basics.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_basics/juce_audio_basics.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_basics.mm b/JuceLibraryCode/include_juce_audio_basics.mm
+index 2643e2d..e0e6c57 100644
+--- a/JuceLibraryCode/include_juce_audio_basics.mm
++++ b/JuceLibraryCode/include_juce_audio_basics.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_basics/juce_audio_basics.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_basics/juce_audio_basics.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_devices.cpp b/JuceLibraryCode/include_juce_audio_devices.cpp
+index 6cd0bd8..fb5c221 100644
+--- a/JuceLibraryCode/include_juce_audio_devices.cpp
++++ b/JuceLibraryCode/include_juce_audio_devices.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_devices/juce_audio_devices.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_devices/juce_audio_devices.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_devices.mm b/JuceLibraryCode/include_juce_audio_devices.mm
+index 7ca20a2..e58b67e 100644
+--- a/JuceLibraryCode/include_juce_audio_devices.mm
++++ b/JuceLibraryCode/include_juce_audio_devices.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_devices/juce_audio_devices.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_devices/juce_audio_devices.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_formats.cpp b/JuceLibraryCode/include_juce_audio_formats.cpp
+index 4a8b9f3..a3c6117 100644
+--- a/JuceLibraryCode/include_juce_audio_formats.cpp
++++ b/JuceLibraryCode/include_juce_audio_formats.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_formats/juce_audio_formats.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_formats/juce_audio_formats.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_formats.mm b/JuceLibraryCode/include_juce_audio_formats.mm
+index b4deae3..f325b8f 100644
+--- a/JuceLibraryCode/include_juce_audio_formats.mm
++++ b/JuceLibraryCode/include_juce_audio_formats.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_formats/juce_audio_formats.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_formats/juce_audio_formats.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_AAX.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_AAX.cpp
+index cdd536f..c599b87 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_AAX.cpp
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_AAX.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_AAX.mm b/JuceLibraryCode/include_juce_audio_plugin_client_AAX.mm
+index e41374a..d4b8c31 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_AAX.mm
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_AAX.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_AU.r b/JuceLibraryCode/include_juce_audio_plugin_client_AU.r
+deleted file mode 100644
+index 7b13a83..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_AU.r
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client_AU.r>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_AU_1.mm b/JuceLibraryCode/include_juce_audio_plugin_client_AU_1.mm
+index 3b3af64..a4fdf7f 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_AU_1.mm
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_AU_1.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm b/JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm
+index b40e42a..175b300 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_AUv3.mm b/JuceLibraryCode/include_juce_audio_plugin_client_AUv3.mm
+index 557ff97..0ac2b2f 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_AUv3.mm
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_AUv3.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS.r b/JuceLibraryCode/include_juce_audio_plugin_client_RTAS.r
+deleted file mode 100644
+index 6413b73..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS.r
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client_RTAS.r>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_1.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_1.cpp
+deleted file mode 100644
+index 8743084..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_1.cpp
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_RTAS_1.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_2.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_2.cpp
+deleted file mode 100644
+index ff53f1f..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_2.cpp
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_RTAS_2.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_3.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_3.cpp
+deleted file mode 100644
+index 37295f0..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_3.cpp
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_RTAS_3.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_4.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_4.cpp
+deleted file mode 100644
+index 9998443..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_4.cpp
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_RTAS_4.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_utils.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_utils.cpp
+deleted file mode 100644
+index 970de28..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_utils.cpp
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_RTAS_utils.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_utils.mm b/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_utils.mm
+deleted file mode 100644
+index fef083b..0000000
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_RTAS_utils.mm
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_RTAS_utils.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp
+index 3d66f62..d3b6529 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_Unity.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_Unity.cpp
+index 3b38ef5..6552559 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_Unity.cpp
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_Unity.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_VST2.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_VST2.cpp
+index 2b9e759..c35394b 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_VST2.cpp
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_VST2.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_VST3.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_VST3.cpp
+index 052256a..8e2e5cd 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_VST3.cpp
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_VST3.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_VST_utils.mm b/JuceLibraryCode/include_juce_audio_plugin_client_VST_utils.mm
+index 20951c2..ee2f414 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_VST_utils.mm
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_VST_utils.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_VST_utils.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_VST_utils.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_plugin_client_utils.cpp b/JuceLibraryCode/include_juce_audio_plugin_client_utils.cpp
+index 6416780..183f61b 100644
+--- a/JuceLibraryCode/include_juce_audio_plugin_client_utils.cpp
++++ b/JuceLibraryCode/include_juce_audio_plugin_client_utils.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_plugin_client/juce_audio_plugin_client_utils.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_processors.cpp b/JuceLibraryCode/include_juce_audio_processors.cpp
+index f2ea745..bfe172e 100644
+--- a/JuceLibraryCode/include_juce_audio_processors.cpp
++++ b/JuceLibraryCode/include_juce_audio_processors.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_processors/juce_audio_processors.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_processors/juce_audio_processors.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_processors.mm b/JuceLibraryCode/include_juce_audio_processors.mm
+index e396c68..b80ae90 100644
+--- a/JuceLibraryCode/include_juce_audio_processors.mm
++++ b/JuceLibraryCode/include_juce_audio_processors.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_processors/juce_audio_processors.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_processors/juce_audio_processors.mm>
+diff --git a/JuceLibraryCode/include_juce_audio_utils.cpp b/JuceLibraryCode/include_juce_audio_utils.cpp
+index f634166..97bd2c5 100644
+--- a/JuceLibraryCode/include_juce_audio_utils.cpp
++++ b/JuceLibraryCode/include_juce_audio_utils.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_utils/juce_audio_utils.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_utils/juce_audio_utils.cpp>
+diff --git a/JuceLibraryCode/include_juce_audio_utils.mm b/JuceLibraryCode/include_juce_audio_utils.mm
+index 84c6ef2..8eae7c6 100644
+--- a/JuceLibraryCode/include_juce_audio_utils.mm
++++ b/JuceLibraryCode/include_juce_audio_utils.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_audio_utils/juce_audio_utils.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_audio_utils/juce_audio_utils.mm>
+diff --git a/JuceLibraryCode/include_juce_core.cpp b/JuceLibraryCode/include_juce_core.cpp
+index 862edad..d0ce163 100644
+--- a/JuceLibraryCode/include_juce_core.cpp
++++ b/JuceLibraryCode/include_juce_core.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_core/juce_core.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_core/juce_core.cpp>
+diff --git a/JuceLibraryCode/include_juce_core.mm b/JuceLibraryCode/include_juce_core.mm
+index 3c86bd0..72b10bf 100644
+--- a/JuceLibraryCode/include_juce_core.mm
++++ b/JuceLibraryCode/include_juce_core.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_core/juce_core.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_core/juce_core.mm>
+diff --git a/JuceLibraryCode/include_juce_cryptography.cpp b/JuceLibraryCode/include_juce_cryptography.cpp
+index c2f79fa..10b3401 100644
+--- a/JuceLibraryCode/include_juce_cryptography.cpp
++++ b/JuceLibraryCode/include_juce_cryptography.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_cryptography/juce_cryptography.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_cryptography/juce_cryptography.cpp>
+diff --git a/JuceLibraryCode/include_juce_cryptography.mm b/JuceLibraryCode/include_juce_cryptography.mm
+index ae5ad2d..9311ea0 100644
+--- a/JuceLibraryCode/include_juce_cryptography.mm
++++ b/JuceLibraryCode/include_juce_cryptography.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_cryptography/juce_cryptography.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_cryptography/juce_cryptography.mm>
+diff --git a/JuceLibraryCode/include_juce_data_structures.cpp b/JuceLibraryCode/include_juce_data_structures.cpp
+index 3706126..9315aa1 100644
+--- a/JuceLibraryCode/include_juce_data_structures.cpp
++++ b/JuceLibraryCode/include_juce_data_structures.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_data_structures/juce_data_structures.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_data_structures/juce_data_structures.cpp>
+diff --git a/JuceLibraryCode/include_juce_data_structures.mm b/JuceLibraryCode/include_juce_data_structures.mm
+index 8f42478..695ec43 100644
+--- a/JuceLibraryCode/include_juce_data_structures.mm
++++ b/JuceLibraryCode/include_juce_data_structures.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_data_structures/juce_data_structures.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_data_structures/juce_data_structures.mm>
+diff --git a/JuceLibraryCode/include_juce_events.cpp b/JuceLibraryCode/include_juce_events.cpp
+index 667778e..1bba110 100644
+--- a/JuceLibraryCode/include_juce_events.cpp
++++ b/JuceLibraryCode/include_juce_events.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_events/juce_events.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_events/juce_events.cpp>
+diff --git a/JuceLibraryCode/include_juce_events.mm b/JuceLibraryCode/include_juce_events.mm
+index 7de1c88..4cc34fc 100644
+--- a/JuceLibraryCode/include_juce_events.mm
++++ b/JuceLibraryCode/include_juce_events.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_events/juce_events.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_events/juce_events.mm>
+diff --git a/JuceLibraryCode/include_juce_graphics.cpp b/JuceLibraryCode/include_juce_graphics.cpp
+index 64570b7..319c76d 100644
+--- a/JuceLibraryCode/include_juce_graphics.cpp
++++ b/JuceLibraryCode/include_juce_graphics.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_graphics/juce_graphics.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_graphics/juce_graphics.cpp>
+diff --git a/JuceLibraryCode/include_juce_graphics.mm b/JuceLibraryCode/include_juce_graphics.mm
+index 6e2297f..b28e6dd 100644
+--- a/JuceLibraryCode/include_juce_graphics.mm
++++ b/JuceLibraryCode/include_juce_graphics.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_graphics/juce_graphics.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_graphics/juce_graphics.mm>
+diff --git a/JuceLibraryCode/include_juce_gui_basics.cpp b/JuceLibraryCode/include_juce_gui_basics.cpp
+index 5c9e275..216c76b 100644
+--- a/JuceLibraryCode/include_juce_gui_basics.cpp
++++ b/JuceLibraryCode/include_juce_gui_basics.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_gui_basics/juce_gui_basics.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_gui_basics/juce_gui_basics.cpp>
+diff --git a/JuceLibraryCode/include_juce_gui_basics.mm b/JuceLibraryCode/include_juce_gui_basics.mm
+index c87fe80..6a9726f 100644
+--- a/JuceLibraryCode/include_juce_gui_basics.mm
++++ b/JuceLibraryCode/include_juce_gui_basics.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_gui_basics/juce_gui_basics.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_gui_basics/juce_gui_basics.mm>
+diff --git a/JuceLibraryCode/include_juce_gui_extra.cpp b/JuceLibraryCode/include_juce_gui_extra.cpp
+index 5290620..7226e19 100644
+--- a/JuceLibraryCode/include_juce_gui_extra.cpp
++++ b/JuceLibraryCode/include_juce_gui_extra.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_gui_extra/juce_gui_extra.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_gui_extra/juce_gui_extra.cpp>
+diff --git a/JuceLibraryCode/include_juce_gui_extra.mm b/JuceLibraryCode/include_juce_gui_extra.mm
+index 763d623..c9b6c3b 100644
+--- a/JuceLibraryCode/include_juce_gui_extra.mm
++++ b/JuceLibraryCode/include_juce_gui_extra.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_gui_extra/juce_gui_extra.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_gui_extra/juce_gui_extra.mm>
+diff --git a/JuceLibraryCode/include_juce_opengl.cpp b/JuceLibraryCode/include_juce_opengl.cpp
+index 4809e42..d9895bc 100644
+--- a/JuceLibraryCode/include_juce_opengl.cpp
++++ b/JuceLibraryCode/include_juce_opengl.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_opengl/juce_opengl.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_opengl/juce_opengl.cpp>
+diff --git a/JuceLibraryCode/include_juce_opengl.mm b/JuceLibraryCode/include_juce_opengl.mm
+index 5063b65..6c2c32d 100644
+--- a/JuceLibraryCode/include_juce_opengl.mm
++++ b/JuceLibraryCode/include_juce_opengl.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_opengl/juce_opengl.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_opengl/juce_opengl.mm>
+diff --git a/JuceLibraryCode/include_juce_video.cpp b/JuceLibraryCode/include_juce_video.cpp
+index 082ac95..bdf22ee 100644
+--- a/JuceLibraryCode/include_juce_video.cpp
++++ b/JuceLibraryCode/include_juce_video.cpp
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_video/juce_video.cpp>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_video/juce_video.cpp>
+diff --git a/JuceLibraryCode/include_juce_video.mm b/JuceLibraryCode/include_juce_video.mm
+index 0e928e6..3da705b 100644
+--- a/JuceLibraryCode/include_juce_video.mm
++++ b/JuceLibraryCode/include_juce_video.mm
+@@ -1,9 +1,9 @@
+-/*
+-
+-    IMPORTANT! This file is auto-generated each time you save your
+-    project - if you alter its contents, your changes may be overwritten!
+-
+-*/
+-
+-#include "AppConfig.h"
+-#include <juce_video/juce_video.mm>
++/*
++
++    IMPORTANT! This file is auto-generated each time you save your
++    project - if you alter its contents, your changes may be overwritten!
++
++*/
++
++#include "AppConfig.h"
++#include <juce_video/juce_video.mm>
